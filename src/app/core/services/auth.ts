@@ -17,4 +17,8 @@ export class Auth {
   signup(data: { firstname: string; lastname: string; username: string; email: string; password: string, phonenumber:string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, data);
   }
+
+  verifyToken(token: string | null): Observable<any> {
+    return this.http.post(`${this.apiUrl}/refreshToken`, { token });
+  }
 }

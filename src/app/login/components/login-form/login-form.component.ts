@@ -23,11 +23,43 @@ export class LoginFormComponent implements OnInit {
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+    this.checkIfLoggedIn();
   }
 
   // convenience getter for easy access to form fields
   get f() {
     return this.signInForm.controls;
+  }
+
+  async checkIfLoggedIn() {
+    const loader = await this.loadingCtrl.create({
+      message: 'Loading...',
+      spinner: 'crescent',   // options: 'bubbles' | 'circles' | 'dots' | 'crescent' | 'lines'
+    });
+    await loader.present();
+
+    let storedRefreshTokenawait = await Preferences.get({
+          key: 'refreshToken'
+        });
+
+    this.authService.verifyToken(storedRefreshTokenawait.value).subscribe({
+      next: async (res) => {
+         await Preferences.set({
+          key: 'refreshToken',
+          value: res.token,
+        });
+        await Preferences.set({
+          key: 'accessToken',
+          value: res.accessToken,
+        });
+        loader.dismiss();
+        this.router.navigate(['/journey/home']);
+        },
+      error: (err) => {
+        loader.dismiss();
+        console.error('Token verification failed:', err);
+      }
+    });
   }
 
   async onSubmit(): Promise<void> {
