@@ -1,0 +1,99 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/signin"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Sign Up</ion-title>
+  </ion-toolbar>
+</ion-header>
+<!-- <ion-content [fullscreen]="true"> -->
+  <div class="container">
+    <h2>Sign Up</h2>
+    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" novalidate>
+      <!-- First Name -->
+      <div>
+        <label for="first_name">First Name</label>
+        <input id="first_name" type="text" formControlName="first_name"
+          [ngClass]="{ 'is-invalid': submitted && f['first_name'].errors }" />
+        <div *ngIf="submitted && f['first_name'].errors" class="error">
+          <div *ngIf="f['first_name'].errors['required']">First name is required</div>
+          <div *ngIf="f['first_name'].errors['minlength']">
+            Must be at least 3 characters
+          </div>
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div>
+        <label for="last_name">Last Name</label>
+        <input id="last_name" type="text" formControlName="last_name"
+          [ngClass]="{ 'is-invalid': submitted && f['last_name'].errors }" />
+        <div *ngIf="submitted && f['last_name'].errors" class="error">
+          <div *ngIf="f['last_name'].errors['required']">Last name is required</div>
+          <div *ngIf="f['last_name'].errors['minlength']">
+            Must be at least 3 characters
+          </div>
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div>
+        <label for="username">Username</label>
+        <input id="username" type="text" formControlName="username"
+          [ngClass]="{ 'is-invalid': submitted && f['username'].errors }" />
+        <div *ngIf="submitted && f['username'].errors" class="error">
+          <div *ngIf="f['username'].errors['required']">Username is required</div>
+          <div *ngIf="f['username'].errors['minlength']">
+            Must be at least 3 characters
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+        <div *ngIf="submitted && f['email'].errors" class="error">
+          <div *ngIf="f['email'].errors['required']">Email is required</div>
+          <div *ngIf="f['email'].errors['email']">Invalid email format</div>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
+        <div *ngIf="submitted && f['password'].errors" class="error">
+          <div *ngIf="f['password'].errors['required']">Password is required</div>
+          <div *ngIf="f['password'].errors['minlength']">
+            Must be at least 6 characters
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div>
+        <label for="phone_number">Phone Number</label>
+        <input id="phone_number" type="text" formControlName="phone_number"
+          [ngClass]="{ 'is-invalid': submitted && f['phone_number'].errors }" />
+        <div *ngIf="submitted && f['phone_number'].errors" class="error">
+          <div *ngIf="f['phone_number'].errors['required']">
+            Phone number is required
+          </div>
+          <div *ngIf="f['phone_number'].errors['pattern']">
+            Must be a valid 10-digit number
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <ion-button class="btn" type="submit">Sign Up</ion-button>
+      <ion-button class="btn" (click)="redirectToSignIn()">
+        log in
+      </ion-button>
+      
+    </form>
+  </div>
+<!-- </ion-content> -->
