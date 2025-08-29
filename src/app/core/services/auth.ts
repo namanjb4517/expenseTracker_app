@@ -18,6 +18,10 @@ export class Auth {
     return this.http.post(`${this.apiUrl}/signup`, data);
   }
 
+  isuserAuthenticated(token: string | null): Observable<any> {
+    return this.http.get(`${this.apiUrl}/ping`, { headers: { Authorization: `Bearer ${token}` }, responseType: 'text' });
+  }
+
   verifyToken(token: string | null): Observable<any> {
     return this.http.post(`${this.apiUrl}/refreshToken`, { token });
   }

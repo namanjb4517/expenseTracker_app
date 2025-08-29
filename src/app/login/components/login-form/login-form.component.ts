@@ -37,12 +37,34 @@ export class LoginFormComponent implements OnInit {
       spinner: 'crescent',   // options: 'bubbles' | 'circles' | 'dots' | 'crescent' | 'lines'
     });
     await loader.present();
-
+    let storedAccessToken = await Preferences.get({
+      key: 'accessToken'
+    });
     let storedRefreshTokenawait = await Preferences.get({
           key: 'refreshToken'
-        });
+    });
+    if(storedAccessToken.value != null){
+      this.authService.isuserAuthenticated(storedAccessToken.value).subscribe({
+        next: (res) => {
+          loader.dismiss();
+          this.router.navigate(['/journey/home']);
+        },
+        error: (err) => {
+          loader.dismiss();
+          console.error('Access token invalid:', err);
+          this.refreshToken(storedRefreshTokenawait.value);
+        }
+      });
+    }
+  }
 
-    this.authService.verifyToken(storedRefreshTokenawait.value).subscribe({
+  async refreshToken(refreshToken: string | null) {
+    const loader = await this.loadingCtrl.create({
+      message: 'Loading...',
+      spinner: 'crescent',   // options: 'bubbles' | 'circles' | 'dots' | 'crescent' | 'lines'
+    });
+    await loader.present();
+    this.authService.verifyToken(refreshToken).subscribe({
       next: async (res) => {
          await Preferences.set({
           key: 'refreshToken',
