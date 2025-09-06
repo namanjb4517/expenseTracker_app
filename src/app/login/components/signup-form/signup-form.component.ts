@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
-import { LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
+import { filter } from 'rxjs';
 import { Auth } from 'src/app/core/services/auth';
 
 @Component({
@@ -16,7 +17,7 @@ export class SignupFormComponent  implements OnInit {
   signUpForm!:FormGroup;
   submitted = false;
 
-  constructor(private fb: FormBuilder, private router:Router, private authService:Auth,private loadingCtrl: LoadingController) { }
+  constructor(private fb: FormBuilder, private router:Router, private authService:Auth,private loadingCtrl: LoadingController, private alertController: AlertController) { }
 
   ngOnInit() {
     this.signUpForm = this.fb.group({
@@ -27,6 +28,18 @@ export class SignupFormComponent  implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       phone_number: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
     });
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        if (event.url.includes('/auth/signin') || event.url.endsWith('/signin')) {
+          console.log('Navigated to signin - resetting form');
+          this.signUpForm.reset();
+          this.submitted = false;
+          this.errorMessage = '';
+        }
+      });
+    
   }
 
   // convenience getter for easy access to form fields
@@ -67,10 +80,18 @@ export class SignupFormComponent  implements OnInit {
         loader.dismiss();
         this.router.navigate(['/journey/home']);
       },
-      error: (err) => {
+      error: async (err) => {
         loader.dismiss();
         console.error('Login failed:', err);
         this.errorMessage = 'Invalid data provided';
+        this.errorMessage = 'Not able to signup. Please try again later.';
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: this.errorMessage,
+          buttons: ['OK'],
+          cssClass: 'error-alert'
+        });
+        await alert.present();
       }
     });
   }

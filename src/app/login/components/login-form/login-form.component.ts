@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Route, Router } from '@angular/router';
+import { NavigationEnd, Route, Router } from '@angular/router';
 import { Auth } from 'src/app/core/services/auth';
 
 import { Preferences } from '@capacitor/preferences';
-import { LoadingController, LoadingOptions } from '@ionic/angular';
+import { AlertController, LoadingController, LoadingOptions } from '@ionic/angular';
+import { filter } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -16,7 +17,7 @@ export class LoginFormComponent implements OnInit {
   signInForm!: FormGroup;
   submitted = false;
   errorMessage: string = '';
-  constructor(private fb: FormBuilder, private router: Router, private authService: Auth,private loadingCtrl:LoadingController) { }
+  constructor(private fb: FormBuilder, private router: Router, private authService: Auth, private loadingCtrl: LoadingController, private alertController: AlertController) { }
 
   ngOnInit() {
     this.signInForm = this.fb.group({
@@ -24,7 +25,21 @@ export class LoginFormComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
     this.checkIfLoggedIn();
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        if (event.url.includes('/auth/signin') || event.url.endsWith('/signin')) {
+          console.log('Navigated to signin - resetting form');
+          this.signInForm.reset();
+          this.submitted = false;
+          this.errorMessage = '';
+        }
+      });
+
   }
+
+
 
   // convenience getter for easy access to form fields
   get f() {
@@ -41,9 +56,9 @@ export class LoginFormComponent implements OnInit {
       key: 'accessToken'
     });
     let storedRefreshTokenawait = await Preferences.get({
-          key: 'refreshToken'
+      key: 'refreshToken'
     });
-    if(storedAccessToken.value != null){
+    if (storedAccessToken.value != null) {
       this.authService.isuserAuthenticated(storedAccessToken.value).subscribe({
         next: (res) => {
           loader.dismiss();
@@ -55,7 +70,7 @@ export class LoginFormComponent implements OnInit {
           this.refreshToken(storedRefreshTokenawait.value);
         }
       });
-    }else{
+    } else {
       loader.dismiss();
     }
   }
@@ -68,7 +83,7 @@ export class LoginFormComponent implements OnInit {
     await loader.present();
     this.authService.verifyToken(refreshToken).subscribe({
       next: async (res) => {
-         await Preferences.set({
+        await Preferences.set({
           key: 'refreshToken',
           value: res.token,
         });
@@ -78,7 +93,7 @@ export class LoginFormComponent implements OnInit {
         });
         loader.dismiss();
         this.router.navigate(['/journey/home']);
-        },
+      },
       error: (err) => {
         loader.dismiss();
         console.error('Token verification failed:', err);
@@ -119,10 +134,17 @@ export class LoginFormComponent implements OnInit {
         this.loadingCtrl.dismiss();
         this.router.navigate(['/journey/home']);
       },
-      error: (err) => {
+      error: async (err) => {
         this.loadingCtrl.dismiss();
         console.error('Login failed:', err);
         this.errorMessage = 'Invalid username or password';
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: this.errorMessage,
+          buttons: ['OK'],
+          cssClass: 'error-alert'
+        });
+        await alert.present();
       }
     });
   }
