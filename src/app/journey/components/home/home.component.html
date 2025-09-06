@@ -1,8 +1,55 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/signin"></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
-    <ion-title>Home</ion-title>
+    <ion-title>
+      
+        <img src="../../../../assets/icon/logo.png" alt="Logo" style="height: 24px; vertical-align: middle; margin-right: 8px; background-color: white;" />
+      
+      ExpenseTrackerApp
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="addExpense()">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <!-- <ion-avatar slot="end">
+      <img src="assets/profile.png" alt="Profile" />
+    </ion-avatar> -->
   </ion-toolbar>
 </ion-header>
+<ion-content class="ion-padding">
+  <!-- Circular Progress + Details -->
+  <div class="progress-section">
+   <app-circle-progress
+  [percent]="usedPercentage"
+  [radius]="80"
+  [stroke]="12"
+  [color]="'#4CAF50'"
+  [bgColor]="'#f4f4f4'"
+></app-circle-progress>
+
+    <div class="progress-details">
+      <p>1. Status: <strong>{{status}}</strong></p>
+      <p>2. Amount limit: <strong>{{amountLimit}} Rs.</strong></p>
+      <p>3. Most Spend Category: <strong>Shopping</strong></p>
+    </div>
+  </div>
+
+  <!-- Section Title -->
+  <div class="recent-spends-title">
+    <h2>Your Recent Spends</h2>
+  </div>
+
+  <!-- Recent Spend Cards -->
+  <ion-card *ngFor="let spend of recentSpends">
+    <ion-card-content>
+      <h3>{{ spend.merchant }}</h3>
+      <p>{{ spend.amount }} {{ spend.currency}} on {{spend.created_at | date:'dd/MM/yyyy'}}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

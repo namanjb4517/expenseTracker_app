@@ -1,0 +1,32 @@
+<svg
+  [attr.width]="radius * 2 + stroke * 2"
+  [attr.height]="radius * 2 + stroke * 2"
+  [attr.viewBox]="
+    '0 0 ' + (radius * 2 + stroke * 2) + ' ' + (radius * 2 + stroke * 2)
+  "
+  class="circle-progress"
+>
+  <circle
+    [attr.cx]="radius + stroke"
+    [attr.cy]="radius + stroke"
+    [attr.r]="radius"
+    [attr.stroke-width]="stroke"
+    [attr.stroke]="color"
+    fill="none"
+    stroke-linecap="round"
+    [attr.stroke-dasharray]="circumference"
+    [attr.stroke-dashoffset]="dashOffset"
+    [attr.transform]="'rotate(-90, ' + (radius + stroke) + ', ' + (radius + stroke) + ')'"
+  ></circle>
+
+  <text
+    [attr.x]="radius + stroke"
+    [attr.y]="radius + stroke"
+    text-anchor="middle"
+    dy=".3em"
+    font-size="20"
+    fill="#666"
+  >
+    {{ percent }}%
+  </text>
+</svg>

@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Add New Expense</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label position="stacked">Amount *</ion-label>
+      <ion-input 
+        type="number" 
+        formControlName="amount" 
+        placeholder="Enter amount"
+        [class.ion-invalid]="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched">
+      </ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched">
+      Amount is required and must be greater than 0
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="stacked">Merchant *</ion-label>
+      <ion-input 
+        type="text" 
+        formControlName="merchant" 
+        placeholder="Enter merchant name"
+        [class.ion-invalid]="expenseForm.get('merchant')?.invalid && expenseForm.get('merchant')?.touched">
+      </ion-input>
+    </ion-item>
+    <ion-note color="danger" *ngIf="expenseForm.get('merchant')?.invalid && expenseForm.get('merchant')?.touched">
+      Merchant name is required
+    </ion-note>
+
+    <ion-item>
+      <ion-label position="stacked">Currency Type *</ion-label>
+      <ion-select 
+        formControlName="currency" 
+        placeholder="Select currency"
+        [class.ion-invalid]="expenseForm.get('currency')?.invalid && expenseForm.get('currency')?.touched">
+        <ion-select-option value="USD">USD ($)</ion-select-option>
+        <ion-select-option value="EUR">EUR (€)</ion-select-option>
+        <ion-select-option value="GBP">GBP (£)</ion-select-option>
+        <ion-select-option value="INR">INR (₹)</ion-select-option>
+        <ion-select-option value="JPY">JPY (¥)</ion-select-option>
+        <ion-select-option value="CAD">CAD (C$)</ion-select-option>
+        <ion-select-option value="AUD">AUD (A$)</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-note color="danger" *ngIf="expenseForm.get('currency')?.invalid && expenseForm.get('currency')?.touched">
+      Please select a currency
+    </ion-note>
+
+    <div class="ion-margin-top">
+      <ion-button 
+        expand="block" 
+        type="submit" 
+        [disabled]="expenseForm.invalid"
+        color="primary">
+        Add Expense
+      </ion-button>
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        (click)="dismiss()"
+        class="ion-margin-top">
+        Cancel
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

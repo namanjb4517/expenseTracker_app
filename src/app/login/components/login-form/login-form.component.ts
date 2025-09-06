@@ -55,6 +55,8 @@ export class LoginFormComponent implements OnInit {
           this.refreshToken(storedRefreshTokenawait.value);
         }
       });
+    }else{
+      loader.dismiss();
     }
   }
 

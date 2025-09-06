@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Auth {
-  private apiUrl = 'http://localhost:8081/auth/v1'; // <-- your backend URL
-
+  private apiUrl = 'http://localhost:8005/auth/v1'; // <-- your backend URL
+  private expenseApiUrl = 'http://localhost:8005/expense/v1';
   constructor(private http: HttpClient) {}
 
   login(credentials: { username: string; password: string }): Observable<any> {
@@ -24,5 +24,17 @@ export class Auth {
 
   verifyToken(token: string | null): Observable<any> {
     return this.http.post(`${this.apiUrl}/refreshToken`, { token });
+  }
+
+  addExpense(expense: any, token: string | null): Observable<any> {
+    return this.http.post(`${this.expenseApiUrl}/addExpense`, expense,{ headers: { Authorization: `Bearer ${token}` }});
+  }
+
+  getRecentSpends(token: string | null): Observable<any> {
+    return this.http.get(`${this.expenseApiUrl}/getExpense`,{ headers: { Authorization: `Bearer ${token}` }});
+    // return this.http.get(`${this.expenseApiUrl}/getExpense`,{ headers: { 'X-User-Id': 'badb423a-aa69-4587-b007-885ea6c9c809',
+    //   Authorization: `Bearer ${token}`
+    //  }});
+    // return this.http.get(`${this.expenseApiUrl}/test`);
   }
 }

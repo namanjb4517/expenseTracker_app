@@ -1,0 +1,39 @@
+.expense-modal {
+  --width: 90%;
+  --max-width: 500px;
+  --height: auto;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+ion-content {
+  --padding-top: 20px;
+  --padding-bottom: 20px;
+}
+
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 16px;
+}
+
+ion-note {
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.ion-invalid {
+  --border-color: var(--ion-color-danger);
+}
+
+ion-button {
+  --border-radius: 8px;
+  margin-top: 8px;
+}
+
+ion-select {
+  --padding-start: 0;
+  --padding-end: 0;
+}
