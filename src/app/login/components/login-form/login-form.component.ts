@@ -130,9 +130,15 @@ export class LoginFormComponent implements OnInit {
           key: 'accessToken',
           value: res.accessToken,
         });
+        
+        console.log('Tokens stored successfully');
         // navigate to dashboard or home page
         this.loadingCtrl.dismiss();
-        this.router.navigate(['/journey/home']);
+        
+        // Add a small delay to ensure tokens are properly stored
+        setTimeout(() => {
+          this.router.navigate(['/journey/home']);
+        }, 100);
       },
       error: async (err) => {
         this.loadingCtrl.dismiss();

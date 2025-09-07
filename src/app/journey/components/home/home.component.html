@@ -10,6 +10,9 @@
       ExpenseTrackerApp
     </ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="loadRecentSpends()">
+        <ion-icon slot="icon-only" name="reload-circle"></ion-icon>
+      </ion-button>
       <ion-button (click)="addExpense()">
         <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
       </ion-button>

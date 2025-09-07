@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
 import { Auth } from 'src/app/core/services/auth';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { ExpenseModalComponent } from '../../shared/expense-modal/expense-modal.component';
 
 @Component({
@@ -17,42 +17,69 @@ export class HomeComponent implements OnInit {
   usedLimit: any = null;
   usedPercentage: number = 0;
   status: string = 'Good';
-  constructor(private authService: Auth, private router: Router, private modalController: ModalController) { }
+  constructor(private authService: Auth, private router: Router, private modalController: ModalController,private alertController:AlertController) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    console.log('HomeComponent ngOnInit called');
+    this.loadRecentSpends();
+    
+    // Set up token refresh interval
     setInterval(async () => {
       let storedRefreshToken = await Preferences.get({
         key: 'refreshToken'
       });
-      this.authService.verifyToken(storedRefreshToken.value).subscribe({
-        next: async (res) => {
-          await Preferences.set({
-            key: 'refreshToken',
-            value: res.token,
-          });
-          await Preferences.set({
-            key: 'accessToken',
-            value: res.accessToken,
-          });
-        },
-        error: (err) => {
-          console.error('Token verification failed:', err);
-          this.router.navigate(['/auth/signin']);
-        }
-      });
+      
+      if (storedRefreshToken.value) {
+        this.authService.verifyToken(storedRefreshToken.value).subscribe({
+          next: async (res) => {
+            console.log('Token refreshed successfully');
+            await Preferences.set({
+              key: 'refreshToken',
+              value: res.token,
+            });
+            await Preferences.set({
+              key: 'accessToken',
+              value: res.accessToken,
+            });
+          },
+          error: (err) => {
+            console.error('Token verification failed:', err);
+            this.router.navigate(['/auth/signin']);
+          }
+        });
+      }
     }, 1000 * 40);
-    setTimeout(() => {
-      this.loadRecentSpends();
-    }, 1000);
   }
 
   async loadRecentSpends() {
+    console.log('loadRecentSpends called');
+    
     let storedAccessToken = await Preferences.get({
       key: 'accessToken'
     });
+    
+    console.log('Access token retrieved:', storedAccessToken.value ? 'Token exists' : 'No token');
+    
+    if (!storedAccessToken.value) {
+      console.error('No access token available');
+      let errorMessage = 'No access token available. Please login again.';
+      const alert = await this.alertController.create({
+        header: 'Authentication Error',
+        message: errorMessage,
+        buttons: ['OK'],
+        cssClass: 'error-alert'
+      });
+      await alert.present();
+      this.router.navigate(['/auth/signin']);
+      return;
+    }
+    
+    console.log('Making API call to getRecentSpends');
     this.authService.getRecentSpends(storedAccessToken.value).subscribe({
       next: (res) => {
+        console.log('API response received:', res);
         this.recentSpends = res;
+        this.usedLimit = 0; // Reset used limit
         for (let spend of this.recentSpends) {
           this.usedLimit += spend.amount;
         }
@@ -71,6 +98,13 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching recent spends:', err);
+        let errorMessage = 'Failed to fetch recent spends. Please try again.';
+        this.alertController.create({
+          header: 'Error',
+          message: errorMessage,
+          buttons: ['OK'],
+          cssClass: 'error-alert'
+        }).then(alert => alert.present());
       }
     });
   }
